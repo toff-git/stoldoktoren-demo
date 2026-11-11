@@ -1,0 +1,157 @@
+/* Stoldoktoren, retning A Sprengskissen. Forsiden er en arbeidstegning som skrus fra hverandre mens man ruller.
+   Forbilder: Anime.js (mekanisme som demonteres ved rulling) og Igloo Inc (strek som blir objekt, ett objekt per skjerm). */
+:root{
+  --kobolt:#1F36C2; --kobolt-dyp:#16288F; --strek:#FFFFFF; --strek-svak:#C9D2FF;
+  --papir:#EEF0F4; --blekk:#0F1530; --blekk-svak:#4A5170; --signal:#FFD23F;
+  --f-vis:"Panchang",ui-sans-serif,system-ui,sans-serif;
+  --f-tekst:"Switzer",ui-sans-serif,system-ui,sans-serif;
+  --kant:clamp(20px,5vw,72px);
+  --hode-h:64px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-snap-type:y mandatory;background:var(--kobolt)}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+body{margin:0;font-kerning:none;background:var(--kobolt);color:var(--strek);font:400 17px/1.5 var(--f-tekst);overflow-x:clip}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.hopp{position:fixed;left:12px;top:12px;z-index:10;background:var(--signal);color:var(--blekk);padding:10px 14px;font-weight:600;transform:translateY(-200%)}
+.hopp:focus{transform:none}
+
+/* ---------- knapper (fra prototype A) ---------- */
+.handling{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.knapp{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;background:var(--signal);color:var(--blekk);font:600 16px var(--f-tekst);text-decoration:none;border:0;border-radius:0;cursor:pointer;touch-action:manipulation;white-space:nowrap;
+  transition:transform .32s cubic-bezier(.2,.9,.25,1),background-color .2s cubic-bezier(.2,.8,.2,1)}
+.knapp:active{transform:scale(.97);transition-duration:.1s}
+.knapp.strek{background:transparent;color:var(--strek);box-shadow:inset 0 0 0 1.5px var(--strek)}
+.knapp:hover{background-color:#FFE27A}.knapp.strek:hover{background-color:rgb(255 255 255 / .08)}
+.knapp.blekk{background:var(--signal);color:var(--blekk)}
+
+/* ---------- scenen: tegningen står fast mens seksjonene ruller forbi ---------- */
+.reise{position:relative}
+.scene{position:fixed;top:0;left:0;right:0;height:100svh;z-index:0;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline-offset:-6px}
+/* tegningen klippes til høyre spalte: delene kan aldri havne bak teksten, heller ikke midt mellom to trinn. Myk kant mot teksten. */
+.scene svg{position:absolute;top:0;left:41.66%;width:58.34%;height:calc(100% - var(--hode-h) - 40px);overflow:hidden;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 72px);mask-image:linear-gradient(to right,transparent 0,#000 72px)}
+.scene.trykkbar{cursor:pointer}
+.scene.snurrbar{cursor:ew-resize}
+.del{stroke:var(--strek);stroke-width:2.2;fill:none;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.del *{vector-effect:non-scaling-stroke}
+.del .fyll{fill:var(--kobolt-dyp)}
+.del .snitt{fill:url(#snitt);stroke:none;opacity:0}
+.leder{stroke:var(--strek-svak);stroke-width:1;stroke-dasharray:3 4;fill:none;vector-effect:non-scaling-stroke}
+.etikett{font:600 12px var(--f-tekst);letter-spacing:.08em;text-transform:uppercase;fill:var(--strek)}
+.etikett-boks{fill:var(--kobolt);stroke:var(--strek);stroke-width:1;vector-effect:non-scaling-stroke}
+
+/* ---------- seksjonene: én hel skjermhøyde per trinn ---------- */
+main{position:relative;z-index:1;pointer-events:none}
+.trinn{height:100svh;scroll-snap-align:start;scroll-snap-stop:always;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.trinn .tekst{grid-column:1;pointer-events:auto;padding:0 0 0 var(--kant);display:grid;gap:18px;max-width:620px}
+
+.topp .tekst{align-self:center;gap:22px;padding-bottom:24px}
+h1{font:800 clamp(30px,4.3vw,66px)/1.02 var(--f-vis);letter-spacing:-.02em}
+.under{font-size:clamp(17px,1.35vw,20px);max-width:34ch;color:var(--strek-svak)}
+.hint{font:500 15px var(--f-tekst);color:var(--strek-svak);max-width:34ch}
+
+/* demonteringen: korte påskrifter nede til venstre, som merknader på en tegning */
+.demontering .tekst{align-self:end;padding-bottom:calc(var(--hode-h) + clamp(40px,9vh,96px));gap:12px}
+.demontering h2{font:800 clamp(24px,2.6vw,40px)/1.05 var(--f-vis);letter-spacing:-.015em}
+.demontering p{max-width:34ch;color:var(--strek-svak);font-size:18px}
+.demontering b{color:var(--strek);font-weight:600}
+
+/* én del per skjerm: delnavnet stort, så feil og tiltak */
+.del-side .tekst{align-self:center;gap:28px}
+.del-side h2{font:800 clamp(26px,2.9vw,44px)/1.04 var(--f-vis);letter-spacing:-.02em}
+.del-side dl{margin:0;display:grid;gap:18px;max-width:40ch}
+.del-side dl div{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:16px;align-items:baseline;padding-top:12px;box-shadow:inset 0 1px 0 rgb(201 210 255 / .5)}
+.del-side dt{font:600 12px var(--f-tekst);letter-spacing:.08em;text-transform:uppercase;color:var(--strek-svak)}
+.del-side dd{margin:0;font-size:18px}
+
+.samlet .tekst{align-self:center;gap:22px}
+.samlet h2{font:800 clamp(28px,3.6vw,56px)/1.04 var(--f-vis);letter-spacing:-.02em}
+.samlet p{max-width:36ch;color:var(--strek-svak);font-size:clamp(17px,1.35vw,20px)}
+
+/* ---------- papirarket etter tegningen ---------- */
+.slutt{position:relative;z-index:1;scroll-snap-align:end;background:var(--papir);color:var(--blekk)}
+.slutt :focus-visible{outline-color:var(--blekk)}
+.slutt .avtale :focus-visible{outline-color:var(--signal)}
+.ark{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(28px,4vw,64px);padding:clamp(48px,6vw,88px) var(--kant) clamp(40px,5vw,64px);align-items:start}
+.ark h2{grid-column:1 / -1;font:800 clamp(32px,5vw,76px)/1 var(--f-vis);letter-spacing:-.025em}
+.par{grid-column:1;grid-row:2;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--blekk);border:2px solid var(--blekk)}
+.par div{background:var(--papir);margin:0}
+.par img{display:block;width:100%;height:auto;aspect-ratio:4 / 3;object-fit:cover}
+.par figcaption{font:600 12px var(--f-tekst);letter-spacing:.08em;text-transform:uppercase;padding:10px 12px}
+.plass{grid-column:1;grid-row:3;font-size:15px;color:var(--blekk-svak);max-width:56ch}
+.avtale{grid-column:2;grid-row:2;background:var(--kobolt);color:var(--strek);padding:clamp(22px,2.4vw,32px);display:grid;gap:14px;justify-items:start}
+.avtale h3{font:800 clamp(20px,1.8vw,28px)/1.1 var(--f-vis);letter-spacing:-.01em}
+.avtale p{color:var(--strek-svak);max-width:36ch}
+.kontakt{grid-column:2;grid-row:3;font-style:normal;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--blekk);border:2px solid var(--blekk)}
+.kontakt span{background:var(--papir);padding:12px 14px;display:grid;gap:2px;min-width:0;overflow-wrap:anywhere}
+.kontakt small{font:600 11px var(--f-tekst);letter-spacing:.1em;text-transform:uppercase;color:var(--blekk-svak)}
+.bunnlinje{margin:0;background:var(--blekk);color:var(--strek-svak);padding:22px var(--kant) calc(var(--hode-h) + 40px);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 28px}
+
+/* ---------- tegningshodet: fast nede til høyre ---------- */
+.hode{position:fixed;right:clamp(12px,2vw,28px);bottom:clamp(12px,2vw,28px);z-index:3;display:grid;grid-template-columns:repeat(4,auto);border:1.5px solid var(--strek);background:var(--kobolt);color:var(--strek);font-size:13px}
+.hode>div{border-left:1px solid var(--strek-svak);padding:8px 14px;min-height:44px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hode>div:first-child{border-left:0}
+.hode small{font:500 10.5px var(--f-tekst);letter-spacing:.1em;text-transform:uppercase;color:var(--strek-svak)}
+.hode b{font:800 12px var(--f-vis);letter-spacing:.02em}
+.hode a{text-decoration:none;font-weight:500}
+.hode a:hover{text-decoration:underline;text-underline-offset:3px}
+.viser{min-width:15.5rem}
+.viser button{all:unset;cursor:pointer;font:600 13px var(--f-tekst);display:flex;align-items:center;gap:8px;min-height:24px}
+.viser button::after{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-top:1.5px solid currentColor;transform:translateY(2px) rotate(-45deg);transition:transform .3s cubic-bezier(.2,.9,.25,1)}
+.viser button[aria-expanded="true"]::after{transform:translateY(-1px) rotate(135deg)}
+.viser button:focus-visible{outline:2px solid var(--signal);outline-offset:4px}
+.trinnliste{position:absolute;left:-1.5px;bottom:calc(100% + 1.5px);margin:0;padding:6px 0;list-style:none;min-width:calc(100% + 3px);background:var(--kobolt);border:1.5px solid var(--strek);transform-origin:50% 100%}
+.trinnliste[hidden]{display:none}
+.trinnliste a{display:flex;align-items:center;min-height:40px;padding:0 14px;font-weight:500}
+.trinnliste a[aria-current="step"]{background:var(--signal);color:var(--blekk)}
+.trinnliste a:hover{background:rgb(255 255 255 / .1);text-decoration:none}
+.trinnliste a[aria-current="step"]:hover{background:#FFE27A}
+
+/* ---------- mobil: samme reise, stolen øverst og mindre, teksten under ---------- */
+@media (max-width:820px){
+  :root{--hode-h:96px;--scene-h:44svh}
+  .scene svg{left:0;width:100%;top:10px;height:var(--scene-h);overflow:hidden;-webkit-mask-image:none;mask-image:none}
+  .trinn{grid-template-columns:1fr}
+  .trinn .tekst,.topp .tekst,.del-side .tekst,.samlet .tekst,.demontering .tekst{align-self:start;padding:calc(var(--scene-h) + 22px) 20px 0;max-width:none}
+  .topp .tekst{gap:16px}
+  h1{font-size:clamp(28px,8vw,34px)}
+  .under{font-size:16px}
+  .topp .hint{display:none}
+  .demontering .tekst{gap:10px}
+  .demontering h2{font-size:24px}
+  .demontering p,.del-side dd{font-size:16px}
+  .del-side .tekst{gap:16px}
+  .del-side h2{font-size:clamp(24px,7vw,30px)}
+  .del-side dl{gap:12px}
+  .del-side dl div{grid-template-columns:4.8rem minmax(0,1fr);gap:12px;padding-top:10px}
+  .samlet h2{font-size:clamp(24px,7vw,30px)}
+  .samlet p{font-size:16px}
+  .handling .knapp{flex:1 1 auto;justify-content:center;padding:0 16px}
+  .ark{grid-template-columns:1fr}
+  .par,.plass,.avtale,.kontakt{grid-column:1;grid-row:auto}
+  .kontakt{grid-template-columns:1fr}
+  .hode{left:10px;right:10px;bottom:10px;grid-template-columns:1fr 1fr;grid-template-areas:"viser viser" "firma ring"}
+  .hode .viser{grid-area:viser;min-width:0}
+  .hode .firma{grid-area:firma;border-left:0;border-top:1px solid var(--strek-svak)}
+  .hode .ring{grid-area:ring;border-top:1px solid var(--strek-svak)}
+  .hode .abo{display:none}
+  /* på papirarket har siden egen kontakt: tegningshodet glir ned og ut, så det ikke dekker innhold */
+  .hode{transition:transform .4s cubic-bezier(.2,.9,.25,1),visibility 0s}
+  .ved-slutt .hode{transform:translateY(calc(100% + 16px));visibility:hidden;transition:transform .4s cubic-bezier(.2,.9,.25,1),visibility 0s .4s}
+  .bunnlinje{padding-bottom:28px}
+  .hode b{font-size:11px;white-space:nowrap}
+  .hode>div{min-height:44px;padding:6px 12px}
+}
+@media (max-height:700px) and (max-width:820px){
+  :root{--scene-h:38svh}
+  .under{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .knapp,.viser button::after,.hode{transition:none}
+  .scene svg{transition:opacity .18s linear}
+}
